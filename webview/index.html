@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src {{cspSource}} 'unsafe-inline';">
+    <title>Timmy Tutorial</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Timmy Tutorial</h1>
+            <p class="subtitle">Your interactive coding tutor</p>
+        </div>
+        
+        <div id="start-view">
+            <div class="input-section">
+                <label for="prompt-input">What would you like to learn?</label>
+                <textarea 
+                    id="prompt-input" 
+                    placeholder="Example: Teach me how to build a Flask CRUD API with SQLite, or Explain how Python decorators work"
+                    rows="4"
+                ></textarea>
+                
+                <div class="button-group">
+                    <button id="upload-pdf-btn" class="secondary-btn">
+                        📄 Upload PDF
+                    </button>
+                    <button id="start-btn" class="primary-btn">
+                        ▶️ Start Tutorial
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <p>💡 <strong>Tip:</strong> You can upload a PDF document to provide additional context for your tutorial.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tutorial-view" style="display: none;">
+            <div class="tutorial-header">
+                <h2>📚 Tutorial in Progress</h2>
+                <button id="reset-btn" class="icon-btn" title="Start a new tutorial">🔄 Reset</button>
+            </div>
+
+            <div id="code-container">
+                <div class="code-header">
+                    <span class="code-label">💻 Code</span>
+                    <button id="copy-code-btn" class="icon-btn" title="Copy code">📋 Copy</button>
+                </div>
+                <pre><code id="code-content">// Code will appear here...</code></pre>
+            </div>
+            
+            <div id="explanation-section">
+                <div class="section-header">
+                    <span>📖 Explanation & History</span>
+                </div>
+                <div id="explanation-history"></div>
+            </div>
+            
+            <div id="controls">
+                <input 
+                    type="text" 
+                    id="question-input" 
+                    placeholder="Ask a question about this step..."
+                >
+                <button id="next-step-btn" class="primary-btn">
+                    ➡️ Next Step
+                </button>
+                <button id="send-question-btn" class="secondary-btn">
+                    💬 Ask
+                </button>
+            </div>
+        </div>
+
+        <div id="error-message" style="display: none;">
+            <span class="error-icon">⚠️</span>
+            <span id="error-text"></span>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Timmy is thinking...</p>
+        </div>
+    </div>
+</body>
+</html>
