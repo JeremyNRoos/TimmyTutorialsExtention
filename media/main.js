@@ -4,6 +4,48 @@
     let sessionId = null;
     let pdfText = '';
 
+    // Inject Highlight.js + styles dynamically
+    const styleLink = document.createElement('link');
+    styleLink.rel = 'stylesheet';
+    styleLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css';
+    document.head.appendChild(styleLink);
+
+    const hljsScript = document.createElement('script');
+    hljsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+    hljsScript.onload = () => {
+        window.hljs?.highlightAll();
+    };
+    document.head.appendChild(hljsScript);
+
+    const style = document.createElement('style');
+    style.textContent = `
+        pre {
+            background-color: #1e1e1e;
+            color: #ddd;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            line-height: 1.5;
+            margin-top: 10px;
+            white-space: pre;
+        }
+        code {
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+        .hljs-comment, .hljs-quote { color: #6a9955; }
+        .hljs-keyword, .hljs-selector-tag, .hljs-subst { color: #569cd6; }
+        .hljs-string, .hljs-title, .hljs-name, .hljs-type { color: #ce9178; }
+        .code-container {
+            background: #252526;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 10px;
+        }
+    `;
+    document.head.appendChild(style);
+
     // Get DOM elements
     const startView = document.getElementById('start-view');
     const tutorialView = document.getElementById('tutorial-view');
@@ -60,9 +102,7 @@
     }
 
     function sendMessage(message) {
-        if (!sessionId) {
-            return;
-        }
+        if (!sessionId) return;
 
         showLoading(true);
 
@@ -78,10 +118,7 @@
 
     function sendQuestion() {
         const question = questionInput.value.trim();
-        if (!question) {
-            return;
-        }
-
+        if (!question) return;
         sendMessage(question);
         questionInput.value = '';
     }
@@ -121,9 +158,7 @@
     function showError(message) {
         errorText.textContent = message;
         errorMessage.style.display = 'flex';
-        setTimeout(() => {
-            hideError();
-        }, 5000);
+        setTimeout(hideError, 5000);
     }
 
     function hideError() {
@@ -138,14 +173,12 @@
         const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
         const blocks = [];
         let match;
-
         while ((match = codeBlockRegex.exec(content)) !== null) {
             blocks.push({
                 language: match[1] || 'text',
                 code: match[2].trim()
             });
         }
-
         return blocks;
     }
 
@@ -159,13 +192,22 @@
         const blocks = parseCodeBlocks(message);
         const explanation = message.replace(/```(\w+)?\n[\s\S]*?```/g, '').trim();
 
-        // Render code
+        // Render code block with highlight.js
         if (blocks.length > 0) {
-            codeContent.textContent = blocks[0].code;
-            codeContent.className = `language-${blocks[0].language}`;
+            const codeBlock = document.createElement('pre');
+            const codeTag = document.createElement('code');
+            codeTag.className = `language-${blocks[0].language}`;
+            codeTag.textContent = blocks[0].code;
+            codeBlock.appendChild(codeTag);
+
+            codeContent.innerHTML = '';
+            codeContent.classList.add('code-container');
+            codeContent.appendChild(codeBlock);
+
+            if (window.hljs) hljs.highlightElement(codeTag);
         }
 
-        // Render explanation - FIXED VERSION
+        // Render explanation text
         const entry = document.createElement('div');
         entry.className = 'explanation-entry';
         
@@ -174,22 +216,14 @@
         stepNumber.textContent = `Step ${explanationHistory.children.length + 1}`;
         entry.appendChild(stepNumber);
 
-        // Split by double newlines to create paragraphs
         const paragraphs = explanation.split(/\n\n+/);
-        
         paragraphs.forEach(para => {
             const p = document.createElement('p');
-            // Process inline markdown
-            let html = escapeHtml(para);
-            // Bold
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Italic
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // Inline code
-            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-            // Single newlines become <br>
-            html = html.replace(/\n/g, '<br>');
-            
+            let html = escapeHtml(para)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
             p.innerHTML = html;
             entry.appendChild(p);
         });
@@ -273,12 +307,9 @@
         });
     };
 
-    // Save and restore state
+    // Save and restore session state
     function saveState() {
-        vscode.setState({
-            sessionId: sessionId,
-            pdfText: pdfText
-        });
+        vscode.setState({ sessionId, pdfText });
     }
 
     const previousState = vscode.getState();
