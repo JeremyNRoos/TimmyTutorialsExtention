@@ -149,6 +149,12 @@
         return blocks;
     }
 
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     function renderStep(message) {
         const blocks = parseCodeBlocks(message);
         const explanation = message.replace(/```(\w+)?\n[\s\S]*?```/g, '').trim();
@@ -159,22 +165,34 @@
             codeContent.className = `language-${blocks[0].language}`;
         }
 
-        // Render explanation
+        // Render explanation - FIXED VERSION
         const entry = document.createElement('div');
         entry.className = 'explanation-entry';
         
-        // Convert markdown-style formatting to HTML
-        const formattedExplanation = explanation
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code>$1</code>');
+        const stepNumber = document.createElement('div');
+        stepNumber.className = 'step-number';
+        stepNumber.textContent = `Step ${explanationHistory.children.length + 1}`;
+        entry.appendChild(stepNumber);
+
+        // Split by double newlines to create paragraphs
+        const paragraphs = explanation.split(/\n\n+/);
         
-        entry.innerHTML = `
-            <div class="step-number">Step ${explanationHistory.children.length + 1}</div>
-            <p>${formattedExplanation}</p>
-        `;
+        paragraphs.forEach(para => {
+            const p = document.createElement('p');
+            // Process inline markdown
+            let html = escapeHtml(para);
+            // Bold
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Italic
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Inline code
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            // Single newlines become <br>
+            html = html.replace(/\n/g, '<br>');
+            
+            p.innerHTML = html;
+            entry.appendChild(p);
+        });
         
         explanationHistory.appendChild(entry);
         entry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -223,8 +241,37 @@
             case 'reset':
                 resetTutorial();
                 break;
+                
+            case 'fileChange':
+                showFileChange(message.file, message.changes);
+                break;
         }
     });
+
+    function showFileChange(file, changes) {
+        const entry = document.createElement('div');
+        entry.className = 'file-change-entry';
+        entry.innerHTML = `
+            <div class="file-change-header">
+                <span class="file-icon">📝</span>
+                <span class="file-name">${escapeHtml(file)}</span>
+            </div>
+            <div class="file-change-actions">
+                <button class="accept-btn" onclick="handleFileAction('${escapeHtml(file)}', 'accept')">✓ Accept</button>
+                <button class="reject-btn" onclick="handleFileAction('${escapeHtml(file)}', 'reject')">✗ Reject</button>
+            </div>
+        `;
+        explanationHistory.appendChild(entry);
+        entry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.handleFileAction = function(file, action) {
+        vscode.postMessage({
+            type: 'fileAction',
+            file: file,
+            action: action
+        });
+    };
 
     // Save and restore state
     function saveState() {

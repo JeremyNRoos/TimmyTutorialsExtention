@@ -5,21 +5,45 @@
   "version": "0.0.1",
   "publisher": "your-name",
   "engines": {
-    "vscode": "^1.106.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "Education",
     "Other"
   ],
   "activationEvents": [
-    "onCommand:timmy-tutorial.start"
+    "onView:timmy-tutorial.tutorialView"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "timmy-tutorial",
+          "title": "Timmy Tutorial",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "timmy-tutorial": [
+        {
+          "type": "webview",
+          "id": "timmy-tutorial.tutorialView",
+          "name": "Tutorial"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "timmy-tutorial.start",
-        "title": "Start Timmy Tutorial"
+        "title": "Start New Tutorial",
+        "category": "Timmy"
+      },
+      {
+        "command": "timmy-tutorial.applyCode",
+        "title": "Apply Code to File",
+        "category": "Timmy"
       }
     ],
     "configuration": {
@@ -49,7 +73,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.106.0",
+    "@types/vscode": "^1.95.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/pdf-parse": "^1.1.4",
