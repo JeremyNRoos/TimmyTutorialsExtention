@@ -1,23 +1,38 @@
 {
   "name": "timmy-tutorials",
-  "displayName": "timmy-tutorials",
+  "displayName": "Timmy Tutorials",
   "description": "Interactive coding tutor for VS Code",
   "version": "0.0.1",
+  "publisher": "your-name",
   "engines": {
     "vscode": "^1.106.0"
   },
   "categories": [
+    "Education",
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:timmy-tutorial.start"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "timmy-tutorials.helloWorld",
-        "title": "Hello World"
+        "command": "timmy-tutorial.start",
+        "title": "Start Timmy Tutorial"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Timmy Tutorial",
+      "properties": {
+        "timmyTutorial.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your OpenAI API key",
+          "order": 1
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -37,6 +52,7 @@
     "@types/vscode": "^1.106.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/pdf-parse": "^1.1.4",
     "typescript-eslint": "^8.46.3",
     "eslint": "^9.39.1",
     "esbuild": "^0.27.0",
@@ -44,5 +60,9 @@
     "typescript": "^5.9.3",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2"
+  },
+  "dependencies": {
+    "openai": "^4.20.1",
+    "pdf-parse": "^1.1.1"
   }
 }
