@@ -31,7 +31,7 @@ export class TutorialProvider implements vscode.WebviewViewProvider {
 
         webview.html = this._getHtmlForWebview(webview);
 
-        // Handle messages from the webview
+        
         webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case 'startTutorial':
@@ -169,20 +169,20 @@ export class TutorialProvider implements vscode.WebviewViewProvider {
             vscode.Uri.joinPath(this._extensionUri, 'media', 'style.css')
         );
 
-        // Try to read the HTML template, fallback to inline HTML if not found
+        
         const htmlPath = path.join(this._extensionUri.fsPath, 'webview', 'index.html');
         let html: string;
 
         try {
             html = fs.readFileSync(htmlPath, 'utf8');
-            // Replace placeholders
+            
             html = html.replace(/{{cspSource}}/g, webview.cspSource);
-            // Inject styles and scripts
+            
             html = html.replace('</head>', `<link href="${styleUri}" rel="stylesheet"></head>`);
             html = html.replace('</body>', `<script src="${scriptUri}"></script></body>`);
         } catch (error) {
             console.error('Could not read webview/index.html, using fallback:', error);
-            // Fallback inline HTML
+            
             html = this._getFallbackHtml(scriptUri, styleUri, webview.cspSource);
         }
 
