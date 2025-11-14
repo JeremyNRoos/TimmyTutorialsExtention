@@ -4,7 +4,7 @@ import { TutorialProvider } from './tutorialProvider';
 export function activate(context: vscode.ExtensionContext) {
     console.log('Timmy Tutorial extension is now active');
 
-    // Register the tutorial provider
+    
     const provider = new TutorialProvider(context.extensionUri);
 
     context.subscriptions.push(
@@ -14,10 +14,10 @@ export function activate(context: vscode.ExtensionContext) {
         )
     );
 
-    // Register command to start tutorial
+    
     context.subscriptions.push(
         vscode.commands.registerCommand('timmy-tutorial.start', async () => {
-            // Check if API key is configured
+            
             const config = vscode.workspace.getConfiguration('timmyTutorial');
             const apiKey = config.get<string>('openaiApiKey');
 
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            // Create and show tutorial panel
+            
             const panel = vscode.window.createWebviewPanel(
                 'timmyTutorial',
                 'Timmy Tutorial',
