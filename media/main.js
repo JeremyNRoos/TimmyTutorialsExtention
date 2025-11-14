@@ -4,7 +4,7 @@
     let sessionId = null;
     let pdfText = '';
 
-    // Inject Highlight.js + styles dynamically
+    
     const styleLink = document.createElement('link');
     styleLink.rel = 'stylesheet';
     styleLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css';
@@ -46,7 +46,7 @@
     `;
     document.head.appendChild(style);
 
-    // Get DOM elements
+    
     const startView = document.getElementById('start-view');
     const tutorialView = document.getElementById('tutorial-view');
     const promptInput = document.getElementById('prompt-input');
@@ -63,7 +63,7 @@
     const resetBtn = document.getElementById('reset-btn');
     const copyCodeBtn = document.getElementById('copy-code-btn');
 
-    // Event listeners
+    
     startBtn.addEventListener('click', startTutorial);
     uploadPdfBtn.addEventListener('click', uploadPDF);
     nextStepBtn.addEventListener('click', () => sendMessage('next'));
@@ -192,7 +192,7 @@
         const blocks = parseCodeBlocks(message);
         const explanation = message.replace(/```(\w+)?\n[\s\S]*?```/g, '').trim();
 
-        // Render code block with highlight.js
+    
         if (blocks.length > 0) {
             const codeBlock = document.createElement('pre');
             const codeTag = document.createElement('code');
@@ -207,7 +207,7 @@
             if (window.hljs) hljs.highlightElement(codeTag);
         }
 
-        // Render explanation text
+        
         const entry = document.createElement('div');
         entry.className = 'explanation-entry';
         
@@ -232,7 +232,7 @@
         entry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Handle messages from extension
+
     window.addEventListener('message', event => {
         const message = event.data;
 
@@ -307,7 +307,7 @@
         });
     };
 
-    // Save and restore session state
+
     function saveState() {
         vscode.setState({ sessionId, pdfText });
     }
